@@ -49,8 +49,8 @@ const SLIDES: SlideDef[] = [
   { id: "demo", steps: DEMO_STEPS, C: DemoSlide },
   { id: "mta", steps: MTA_STEPS, C: MtaSlide },
   { id: "takeaways", steps: TAKEAWAYS_STEPS, C: TakeawaysSlide },
-  { id: "colophon", steps: COLOPHON_STEPS, C: ColophonSlide },
   { id: "end", steps: 1, C: EndSlide },
+  { id: "colophon", steps: COLOPHON_STEPS, C: ColophonSlide },
 ];
 
 function parseHash(): [number, number] {

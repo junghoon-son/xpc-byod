@@ -61,15 +61,15 @@ function MacCodeWindow({
 export function SideBySideSlide({ step }: { step: number }) {
   return (
     <SlideShell kicker="same chart" title="The difference isn’t line count">
-      <div className="grid grid-cols-2 items-start gap-[3vw]">
-        <MacCodeWindow
-          title="Imperative — matplotlib"
-          accent="var(--imp)"
-          note="8 lines, every one on you"
-        >
-          <CodeBlock lines={MPL} accent="var(--imp)" />
-        </MacCodeWindow>
-        <div>
+      <div className="flex h-full flex-col gap-[3vh] pb-[4vh]">
+        <div className="grid grid-cols-2 items-start gap-[3vw]">
+          <MacCodeWindow
+            title="Imperative — matplotlib"
+            accent="var(--imp)"
+            note="8 lines, every one on you"
+          >
+            <CodeBlock lines={MPL} accent="var(--imp)" />
+          </MacCodeWindow>
           <MacCodeWindow
             title="Declarative — Altair"
             accent="var(--dec)"
@@ -81,12 +81,33 @@ export function SideBySideSlide({ step }: { step: number }) {
               fontSize="clamp(0.8rem, 1.6vw, 1.05rem)"
             />
           </MacCodeWindow>
-          <Reveal show={step >= 1} className="mt-5">
-            <p className="text-[clamp(1.05rem,2.1vw,1.5rem)] font-semibold text-[var(--dec)]">
-              Administrative overhead is minimized.
-            </p>
-          </Reveal>
         </div>
+        <Reveal show={step >= 1} className="min-h-0 flex-1">
+          <div className="flex h-full items-center justify-center gap-[4vw]">
+            <ul className="shrink-0 space-y-[1.8vh] text-[clamp(1rem,2vw,1.4rem)] font-semibold text-[var(--dec)]">
+              <li>→ Overhead minimized</li>
+              <li>→ Faster iteration</li>
+              <li>
+                → Less thankless work{" "}
+                <span className="block pl-[1.35em] text-[0.72em] font-normal italic text-[var(--muted)]">
+                  polishing is generally thankless
+                </span>
+              </li>
+            </ul>
+            <div className="h-full min-h-0">
+              {step >= 1 && (
+                <video
+                  src="/Antigravity.mp4"
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  className="h-full w-auto rounded-xl border border-[#d5d5d8] object-contain shadow-[0_14px_36px_rgba(32,38,44,0.16)]"
+                />
+              )}
+            </div>
+          </div>
+        </Reveal>
       </div>
     </SlideShell>
   );
@@ -146,29 +167,35 @@ export const TAKEAWAYS_STEPS = 3;
 const POINTS = [
   {
     n: "01",
-    text: "The interface keeps rising: pixels → specs → English. Each rung trades control of the how for speed to the what.",
+    head: "Be declarative.",
+    text: "Say what you want, not how to build it.",
   },
   {
     n: "02",
-    text: "Polish is free now. Judgment isn’t. Spend the reclaimed hours on the question, not the legend.",
+    head: "Direct, don’t delegate.",
+    text: "The model isn’t an intern you hand tasks to — tell it what you need and let it choose the how.",
   },
   {
     n: "03",
-    text: "Under-specify on purpose. The wiggle room is where the model teaches you something back.",
+    head: "Under-specify on purpose.",
+    text: "Leave wiggle room and the model teaches you back — the collective knowledge it carries becomes your new defaults.",
   },
 ];
 
 export function TakeawaysSlide({ step }: { step: number }) {
   return (
     <SlideShell kicker="takeaways" title="Declare the outcome. Interrogate the how.">
-      <div className="max-w-[44em] space-y-[3.5vh] pt-[2vh]">
+      <div className="max-w-[52em] space-y-[3.5vh] pt-[2vh]">
         {POINTS.map((p, i) => (
           <Reveal key={p.n} show={step >= i}>
-            <div className="flex items-baseline gap-6">
+            <div className="grid grid-cols-[auto_14em_1fr] items-baseline gap-x-6 gap-y-1">
               <span className="mono text-[clamp(0.9rem,1.8vw,1.2rem)] text-[var(--accent)]">
                 {p.n}
               </span>
-              <p className="text-[clamp(1.05rem,2.1vw,1.5rem)] leading-relaxed">
+              <strong className="text-[clamp(1.05rem,2.1vw,1.5rem)] font-bold text-[var(--accent)]">
+                {p.head}
+              </strong>
+              <p className="border-l border-[var(--border)] pl-6 text-[clamp(1rem,1.9vw,1.35rem)] leading-relaxed text-[var(--muted)]">
                 {p.text}
               </p>
             </div>

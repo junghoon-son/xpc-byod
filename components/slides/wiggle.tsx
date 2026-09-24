@@ -2,8 +2,8 @@
 
 import { Punchline, Reveal, SlideShell } from "@/components/shell";
 
-// Steps: 0 over-specified · 1 goal-level · 2 punchline
-export const WIGGLE_STEPS = 3;
+// Steps: 0 over-specified · 1 goal-level · 2 punchline · 3 wobble footnote
+export const WIGGLE_STEPS = 4;
 
 export function WiggleSlide({ step }: { step: number }) {
   return (
@@ -48,6 +48,26 @@ export function WiggleSlide({ step }: { step: number }) {
         You can’t be surprised by output you fully specified. No surprise, no
         development.
       </Punchline>
+      <Reveal show={step >= 3} delay={0.15} className="mt-[3vh]">
+        <div className="flex items-start gap-4 rounded-xl border border-[#d9cbe6] bg-[#f6f1fb] px-5 py-4">
+          <div className="mono mt-0.5 shrink-0 rounded-md bg-[#7c5cb8] px-2 py-1 text-[0.6em] font-bold uppercase tracking-widest text-white">
+            word of advice
+          </div>
+          <div className="min-w-0">
+            <p className="text-[clamp(0.9rem,1.7vw,1.2rem)] leading-relaxed">
+              Nature figured this out first. Crick’s{" "}
+              <strong className="text-[#7c5cb8]">Wobble Hypothesis</strong>: the
+              slack at the third codon position is a{" "}
+              <em>feature</em> — it lets one tRNA read several codons. The
+              wiggle room <em>is</em> the capability.
+            </p>
+            <p className="mono mt-2 text-[clamp(0.6rem,1.1vw,0.78rem)] text-[var(--muted)]">
+              Agris et&nbsp;al., “Celebrating wobble decoding: Half a century
+              and still much is new.” RNA Biology (2018) · PMID&nbsp;28812932
+            </p>
+          </div>
+        </div>
+      </Reveal>
     </SlideShell>
   );
 }

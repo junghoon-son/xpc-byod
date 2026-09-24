@@ -3,14 +3,15 @@
 import { motion } from "motion/react";
 import { Punchline, Reveal, SlideShell } from "@/components/shell";
 
-// Steps: 0 confession + “then” pie · 1 “now” pie (python shrinks) · 2 punchline
+// Steps: 0 confession + “then” pie · 1 “now” pie (new things take 80%) · 2 punchline
 export const LANGUAGES_STEPS = 3;
 
-// share of coding time, summing to 100
+// share of "my craft", summing to 100
 const LANGS = [
-  { name: "Python", then: 75, now: 15, color: "#3776ab" },
-  { name: "SQL", then: 20, now: 50, color: "#0e7a5f" },
-  { name: "JavaScript", then: 5, now: 35, color: "#e8a33d" },
+  { name: "Python", then: 75, now: 3, color: "#3776ab" },
+  { name: "SQL", then: 20, now: 10, color: "#0e7a5f" },
+  { name: "JavaScript", then: 5, now: 7, color: "#e8a33d" },
+  { name: "new things", then: 0, now: 80, color: "#7c5cb8" },
 ];
 
 const TAU = Math.PI * 2;
@@ -45,6 +46,7 @@ function Pie({
         const a0 = acc * TAU;
         const a1 = (acc + share) * TAU;
         acc += share;
+        if (share === 0) return null;
         const mid = (a0 + a1) / 2;
         const out = explode === l.name ? 7 : 0;
         const dx = out * Math.sin(mid);
@@ -71,19 +73,21 @@ function Pie({
               stroke="#fff"
               strokeWidth={2}
             />
-            <text
-              x={C + dx + lr * Math.sin(mid)}
-              y={C + dy - lr * Math.cos(mid) + 5}
-              textAnchor="middle"
-              fill="#fff"
-              fontSize={l[values] >= 15 ? 17 : 13}
-              fontWeight={700}
-              style={{ paintOrder: "stroke" }}
-              stroke="rgba(0,0,0,0.25)"
-              strokeWidth={l[values] < 15 ? 2.5 : 0}
-            >
-              {l[values]}%
-            </text>
+            {l[values] >= 6 && (
+              <text
+                x={C + dx + lr * Math.sin(mid)}
+                y={C + dy - lr * Math.cos(mid) + 5}
+                textAnchor="middle"
+                fill="#fff"
+                fontSize={l[values] >= 15 ? 17 : 13}
+                fontWeight={700}
+                style={{ paintOrder: "stroke" }}
+                stroke="rgba(0,0,0,0.25)"
+                strokeWidth={l[values] < 15 ? 2.5 : 0}
+              >
+                {l[values]}%
+              </text>
+            )}
           </motion.g>
         );
       })}
@@ -102,15 +106,15 @@ export function LanguagesSlide({ step }: { step: number }) {
         <div className="flex min-h-0 flex-1 items-center justify-center gap-[6vw]">
           <div className="flex flex-col items-center">
             <div className="mono mb-3 text-[clamp(0.8rem,1.6vw,1.1rem)] uppercase tracking-widest text-[var(--muted)]">
-              most of my career
+              “my craft” · most of my career
             </div>
             <Pie values="then" show={step >= 0} size={340} />
           </div>
           <Reveal show={step >= 1} className="flex flex-col items-center">
             <div className="mono mb-3 text-[clamp(0.8rem,1.6vw,1.1rem)] uppercase tracking-widest text-[var(--accent)]">
-              now
+              “my craft” · now
             </div>
-            <Pie values="now" show={step >= 1} explode="Python" size={340} />
+            <Pie values="now" show={step >= 1} explode="new things" size={340} />
           </Reveal>
         </div>
 
@@ -131,8 +135,9 @@ export function LanguagesSlide({ step }: { step: number }) {
           </div>
           <Reveal show={step >= 1} delay={0.8}>
             <p className="rounded-lg bg-[var(--panel)] px-4 py-1.5 text-[clamp(0.9rem,1.7vw,1.2rem)]">
-              Python: <strong className="text-[#3776ab]">75% → 15%</strong> of
-              my coding time <span className="text-[var(--muted)]">▼</span>
+              Trying new things:{" "}
+              <strong className="text-[#7c5cb8]">0% → 80%</strong> of my time{" "}
+              <span className="text-[var(--muted)]">▲</span>
             </p>
           </Reveal>
         </div>
@@ -146,8 +151,9 @@ export function LanguagesSlide({ step }: { step: number }) {
               {step >= 1 && (
                 <span>
                   {" "}
-                  Now I ship mostly <strong>SQL and JavaScript</strong> — the
-                  model carries the syntax; I carry the intent.{" "}
+                  Now <strong>80% is trying something new</strong> — iterating,
+                  looping — and everything I used to ship got squished into the
+                  other 20%.{" "}
                   <span className="mono text-[0.8em] text-[var(--muted)]">
                     (this deck is JavaScript.)
                   </span>

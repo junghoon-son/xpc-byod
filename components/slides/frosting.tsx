@@ -2,9 +2,9 @@
 
 import { useRef } from "react";
 import { motion } from "motion/react";
-import { Punchline, SlideShell } from "@/components/shell";
+import { Punchline, Reveal, SlideShell } from "@/components/shell";
 
-// Steps: 0 tickets pile up · 1 all auto-resolved · 2 punchline
+// Steps: 0 post-its pile up · 1 all auto-resolved · 2 punchline
 export const FROSTING_STEPS = 3;
 
 const CHORES = [
@@ -16,41 +16,17 @@ const CHORES = [
   { id: "VIZ-106", text: "Format the SQL before anyone sees it", label: "chore" },
 ];
 
-const LABEL_COLORS: Record<string, string> = {
-  design: "#b07aa1",
-  polish: "#e8a33d",
-  chore: "#8a95a0",
+// classic 3M colorways: pink for design, canary yellow for polish, blue for chores
+const NOTE_COLORS: Record<string, { bg: string; strip: string }> = {
+  design: { bg: "#ffd6e7", strip: "#f3b6cd" },
+  polish: { bg: "#fff8a6", strip: "#efe07c" },
+  chore: { bg: "#cde9ff", strip: "#a9cfee" },
 };
 
-function StatusIcon({ done }: { done: boolean }) {
-  return done ? (
-    <svg viewBox="0 0 14 14" className="h-4 w-4 shrink-0">
-      <circle cx="7" cy="7" r="7" fill="#5e6ad2" />
-      <path
-        d="M4 7.2 L6.2 9.4 L10 5"
-        stroke="#fff"
-        strokeWidth="1.6"
-        fill="none"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  ) : (
-    <svg viewBox="0 0 14 14" className="h-4 w-4 shrink-0">
-      <circle
-        cx="7"
-        cy="7"
-        r="6"
-        fill="none"
-        stroke="#a8b0b9"
-        strokeWidth="1.6"
-        strokeDasharray="2.5 2"
-      />
-    </svg>
-  );
-}
+const MARKER_FONT =
+  '"Marker Felt", "Segoe Print", "Comic Sans MS", cursive';
 
-function Ticket({
+function PostIt({
   chore,
   i,
   done,
@@ -61,56 +37,66 @@ function Ticket({
   done: boolean;
   settled: boolean;
 }) {
-  const tilt = (i % 2 ? 1 : -1) * (0.3 + (i % 3) * 0.35);
+  const tilt = (i % 2 ? 1 : -1) * (1.1 + (i % 3) * 0.9);
+  const c = NOTE_COLORS[chore.label];
   return (
     <motion.div
-      initial={settled ? false : { opacity: 0, y: -70, rotate: 0 }}
-      animate={{ opacity: done ? 0.72 : 1, y: 0, rotate: tilt }}
+      initial={settled ? false : { opacity: 0, y: -90, rotate: 0 }}
+      animate={{ opacity: done ? 0.75 : 1, y: 0, rotate: tilt }}
       transition={{
         type: "spring",
         stiffness: 320,
         damping: 24,
-        delay: settled ? 0 : 0.2 + i * 0.22,
+        delay: settled ? 0 : 0.2 + i * 0.18,
       }}
-      className="-mt-1.5 flex items-center gap-3 rounded-lg border border-[#e0e4e9] bg-white px-4 py-2.5 shadow-[0_3px_10px_rgba(32,38,44,0.1)]"
+      className="relative flex h-[clamp(110px,21vh,210px)] flex-col p-[1em] pt-[1.2em]"
+      style={{
+        background: `linear-gradient(180deg, ${c.strip} 0, ${c.bg} 1.1em)`,
+        boxShadow:
+          "0 1px 2px rgba(32,38,44,0.12), 0 10px 18px rgba(32,38,44,0.18)",
+      }}
     >
-      <StatusIcon done={done} />
-      <span className="mono shrink-0 text-[0.72em] text-[#8a95a0]">
-        {chore.id}
-      </span>
-      <span className="relative min-w-0 flex-1 truncate">
+      <div className="mono flex items-center justify-between text-[0.55em] uppercase tracking-wider text-[rgba(32,38,44,0.45)]">
+        <span>{chore.id}</span>
+        <span>{chore.label}</span>
+      </div>
+      <p
+        className="relative mt-[0.5em] min-h-0 flex-1 text-[clamp(0.85rem,1.7vw,1.2rem)] leading-snug text-[#2b3238]"
+        style={{ fontFamily: MARKER_FONT }}
+      >
         {chore.text}
         <motion.span
           initial={false}
           animate={{ width: done ? "100%" : "0%" }}
           transition={{ delay: done ? i * 0.15 : 0, duration: 0.3 }}
-          className="absolute left-0 top-1/2 h-[2px] bg-[var(--imp)]"
+          className="absolute left-0 top-[45%] h-[3px] rounded-full bg-[var(--imp)]"
         />
-      </span>
-      <motion.span
-        initial={false}
-        animate={{ opacity: done ? 1 : 0, scale: done ? 1 : 0.6 }}
-        transition={{ delay: done ? i * 0.15 + 0.15 : 0 }}
-        className="mono shrink-0 rounded-full border border-[var(--dec)] px-2 py-0.5 text-[0.55em] uppercase tracking-wider text-[var(--dec)]"
+      </p>
+      <div
+        className="flex items-end justify-between text-[0.8em] text-[rgba(32,38,44,0.6)]"
+        style={{ fontFamily: MARKER_FONT }}
       >
-        auto
-      </motion.span>
-      <span className="flex shrink-0 items-center gap-1.5">
-        <span
-          className="h-2 w-2 rounded-full"
-          style={{ background: LABEL_COLORS[chore.label] }}
-        />
-        <span className="mono text-[0.65em] text-[#8a95a0]">
-          {chore.label}
-        </span>
-      </span>
+        <span>{done ? "— AI" : "— you"}</span>
+        <motion.span
+          initial={false}
+          animate={{
+            opacity: done ? 1 : 0,
+            scale: done ? 1 : 0.6,
+            rotate: done ? -8 : 0,
+          }}
+          transition={{ delay: done ? i * 0.15 + 0.15 : 0 }}
+          className="mono rounded border-2 border-[var(--dec)] px-1.5 py-0.5 text-[0.6em] font-bold uppercase tracking-wider text-[var(--dec)]"
+        >
+          auto ✓
+        </motion.span>
+      </div>
+      {/* curled bottom-right corner */}
       <span
-        className={`mono flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[0.6em] font-bold ${
-          done ? "bg-[#e6e9f5] text-[#5e6ad2]" : "bg-[#eef1f4] text-[#5f6b76]"
-        }`}
-      >
-        {done ? "AI" : "JS"}
-      </span>
+        className="absolute bottom-0 right-0 h-[1.1em] w-[1.1em]"
+        style={{
+          background: `linear-gradient(315deg, var(--bg, #fff) 48%, rgba(32,38,44,0.14) 50%, ${c.strip} 54%)`,
+        }}
+      />
     </motion.div>
   );
 }
@@ -122,25 +108,28 @@ export function FrostingSlide({ step }: { step: number }) {
       kicker="the work that disappeared"
       title={
         <>
-          “That’s <em className="text-[var(--accent)]">frosting</em>” — and
-          frosting is now free
+          “That’s <em className="text-[var(--accent)]">IC</em>ing on the cake”
+          — and it’s generally “free”
+          <span className="align-super text-[0.5em] text-[var(--muted)]">
+            *
+          </span>
         </>
       }
     >
       <div className="mx-auto flex h-full max-w-[48em] flex-col justify-center pb-[6vh] text-[clamp(0.95rem,1.9vw,1.35rem)]">
-        <div className="mono mb-3 flex items-center justify-between text-[clamp(0.65rem,1.2vw,0.85rem)] uppercase tracking-widest text-[var(--muted)]">
-          <span>backlog · every chart, every time</span>
+        <div className="mono mb-4 flex items-center justify-between text-[clamp(0.65rem,1.2vw,0.85rem)] uppercase tracking-widest text-[var(--muted)]">
+          <span>the sticky-note wall · every chart, every time</span>
           <motion.span
             initial={false}
             animate={{ opacity: step >= 1 ? 1 : 0 }}
             className="text-[var(--dec)]"
           >
-            6 closed · assignee changed
+            all 6 peeled off · assignee: the model
           </motion.span>
         </div>
-        <div>
+        <div className="grid grid-cols-3 gap-[1.5vw]">
           {CHORES.map((c, i) => (
-            <Ticket
+            <PostIt
               key={c.id}
               chore={c}
               i={i}
@@ -150,9 +139,15 @@ export function FrostingSlide({ step }: { step: number }) {
           ))}
         </div>
         <Punchline show={step >= 2}>
-          The frosting became free. The cake — the question, the data, the
+          The icing became free. The cake — the question, the data, the
           judgment — is still yours to bake.
         </Punchline>
+        <Reveal show={step >= 2} delay={0.5}>
+          <p className="mono mt-3 text-[0.6em] text-[var(--muted)]">
+            * “free”: tokenized, of course — and VC-subsidized. thanks,
+            Anthropic.
+          </p>
+        </Reveal>
       </div>
     </SlideShell>
   );
